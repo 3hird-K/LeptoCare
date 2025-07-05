@@ -1,20 +1,25 @@
-import { TextInput, TextInputProps } from "react-native";
+import { TextInput, TextInputProps, StyleSheet } from "react-native";
 
 type CustomInputProps = {
     // custom fields
 } & TextInputProps;
 
 export default function CustomInput(props: CustomInputProps){
-    return <TextInput {...props} style={[styles.input, props.style]} />
+    return (
+        <TextInput
+            {...props}
+            style={[styles.input, props.style]}
+            placeholderTextColor={'#a1a1a1'}
+        />
+    );
 }
 
-const styles = {
+const styles = StyleSheet.create({
     input: {
         borderWidth: 1,
-        borderColor: '#676b68',
+        borderColor: '#a1a1a1',
         padding: 10,
         borderRadius: 5,
-        placeholderTextColor: '#676b68',
     },
-};
+});
 
