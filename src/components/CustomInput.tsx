@@ -1,13 +1,14 @@
-import { Controller } from "react-hook-form";
+import { Controller,Control, FieldValues, Path } from "react-hook-form";
 import { TextInput, TextInputProps, StyleSheet, Text, View } from "react-native";
 
-type CustomInputProps = {
-    control: any;
-    name: string;
+type CustomInputProps<T extends FieldValues> = {
+    control: Control<T>;
+    name: Path<T>;
 } & TextInputProps;
 
-export default function CustomInput({control, name, ...props}: CustomInputProps){
+export default function CustomInput<T extends FieldValues>({control, name, ...props}: CustomInputProps<T>){
     return (
+
         <Controller rules={{required: "This field is required"}} control={control} name={name} render={
         ({field: {value, onChange, onBlur}, fieldState: {error}}) => (
           <View style={styles.container}>
@@ -23,6 +24,7 @@ export default function CustomInput({control, name, ...props}: CustomInputProps)
           </View>
         )
       }/>
+      
     );
 }
 
