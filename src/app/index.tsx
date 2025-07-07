@@ -1,76 +1,25 @@
-import { StatusBar } from 'expo-status-bar';
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import CustomInput from '@/components/CustomInput';
-import CustomBtn from '@/components/CustomBtn';
-import { useForm } from 'react-hook-form';
-import {z} from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Link } from 'expo-router';
+import { View, Text, StyleSheet } from 'react-native'
 
-
-
-const signInSchema = z.object({
-  email: z.string({message:"Email is required"}).email("Invalid email"),
-  password: z.string({message: "Password is required"}).min(8, "Password must be at least 8 characters long"),
-});
-
-type signInFields = z.infer<typeof signInSchema>;
-
-
-
-
-export default function App() {
-
-  const {control, handleSubmit, formState:{errors}} = useForm<signInFields>({
-    resolver: zodResolver(signInSchema),
-  })
-
-  console.log(errors)
-
-  const onSignIn = (data: signInFields) => {
-    console.log("Sign In:", data.email, data.password);
-  }
-
-
-
+export default function Index() {
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
-     style={styles.container}>
-
-      <Text style={styles.title}>Sign In</Text>
-
-      <View style={styles.form}>
-        <CustomInput
-          control={control}
-          name='email'
-          placeholder='Email'
-          autoFocus
-          keyboardType='email-address'
-          autoComplete='email'
-        />
-        <CustomInput control={control} name='password' placeholder='Password' secureTextEntry/>
-      </View>
-      
-      <CustomBtn onPress={handleSubmit(onSignIn)} text='Sign in' />
-
-
-      <StatusBar style="auto" /> 
-    </KeyboardAvoidingView>
-  );
+    <View style={styles.container}>
+      <Text style={styles.title}>Welcome to LeptoCare!</Text>
+      <Link href='/sign-in'>Sign-In</Link>
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     justifyContent: 'center',
-    gap: 10,
-    padding: 20,
+    alignItems: 'center',
+    gap: 20,
   },
-  title:{
+  title: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: '#333',
   },
-  form:{
-    gap: 10
-  }
 });

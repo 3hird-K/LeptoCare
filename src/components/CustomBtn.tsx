@@ -15,7 +15,8 @@ export default function CustomBtn({text, ...props}: CustomBtnProps) {
 
 const styles = StyleSheet.create({
         button:{
-            backgroundColor: '#0a1282',
+            // backgroundColor: '#0a1282',
+            backgroundColor: '#4353Fd',
             padding: 10,
             borderRadius: 5,
             alignItems: 'center',
