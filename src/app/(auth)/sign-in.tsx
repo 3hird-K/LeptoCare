@@ -4,7 +4,8 @@ import CustomBtn from '@/components/CustomBtn';
 import { useForm } from 'react-hook-form';
 import {z} from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
+import { useAuth } from '@/providers/AuthProvider';
 
 
 
@@ -26,8 +27,12 @@ export default function SignInScreen() {
 
   console.log(errors)
 
+  const { signIn } = useAuth()
+
   const onSignIn = (data: signInFields) => {
     console.log("Sign In:", data.email, data.password);
+    signIn();
+    // router.replace('/'); // Redirect to home after sign-in
   }
 
 
@@ -51,7 +56,7 @@ export default function SignInScreen() {
       </View>
       
       <CustomBtn onPress={handleSubmit(onSignIn)} text='Sign in' />
-
+  
       <Link href='/sign-up' style={styles.link}>Dont have an account? Sign up</Link>
 
     </KeyboardAvoidingView>

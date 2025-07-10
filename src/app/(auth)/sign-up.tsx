@@ -26,7 +26,7 @@ export default function SignUpScreen() {
 
   console.log(errors)
 
-  const onSignIn = (data: signUpFields) => {
+  const onSignUp = (data: signUpFields) => {
     console.log("Sign Up:", data.email, data.password);
   }
 
@@ -50,7 +50,7 @@ export default function SignUpScreen() {
         <CustomInput control={control} name='password' placeholder='Password' secureTextEntry/>
       </View>
       
-      <CustomBtn onPress={handleSubmit(onSignIn)} text='Login' />
+      <CustomBtn onPress={handleSubmit(onSignUp)} text='Login' />
 
       <Link href='/sign-in' style={styles.link}>Already have an account? Sign in</Link>
 
