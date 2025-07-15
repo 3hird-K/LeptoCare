@@ -1,11 +1,11 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Button } from "react-native";
 
 
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>HomeScreen</Text>
-        <Text style={styles.paragraph}>Users' Welcome to LeptoCare!</Text>
+        <Text style={styles.title}>HomeScreen</Text>
+        <Text style={styles.paragraph}>Users' Welcome to LeptoCares!</Text>
     </View>
   );
 }

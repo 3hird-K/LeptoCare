@@ -1,14 +1,15 @@
-import { useAuth } from "@/providers/AuthProvider";
+// import { useAuth } from "@/providers/AuthProvider";
 import { Redirect, Slot } from "expo-router";
+import { useAuth } from "@clerk/clerk-expo";
+
 
 export default function ProtectedLayout(){
 
-    const {isAuthenticated} = useAuth();
+    const {isSignedIn} = useAuth();
     
-    if(!isAuthenticated){
-        return <Redirect href='/sign-up ' />;
-
+    if(!isSignedIn){
+        return <Redirect href='/sign-in ' />;
     }
 
     return <Slot />;
-}
+}   

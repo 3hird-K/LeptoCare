@@ -1,19 +1,17 @@
 import { Link } from 'expo-router';
 import { View, Text, StyleSheet, Button } from 'react-native'
-import { useAuth } from '@/providers/AuthProvider';
 import CustomBtn from '@/components/CustomBtn';
+import { useAuth } from '@clerk/clerk-expo';
 
 export default function WelcomeScreen() {
-  const { isAuthenticated, signOut } = useAuth();
+  const { signOut, isSignedIn } = useAuth();
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to LeptoCare!</Text>
 
-      <Text>{isAuthenticated? "Authenticated" : "Unauthenticated"}</Text>
-      <CustomBtn text="Sign-out" onPress={signOut} />
-
-
+      <Text>{isSignedIn? "Authenticated" : "Unauthenticated"}</Text>
+      <CustomBtn text="Sign-out" onPress={() => signOut()}/>
       <Link href='/sign-in'>Sign-In</Link>
       <Link href='/(protected)'>Goto Protected Screens</Link>
     </View>

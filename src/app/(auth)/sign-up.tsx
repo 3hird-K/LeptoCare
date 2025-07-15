@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import {z} from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'expo-router';
+import { useSignUp } from '@clerk/clerk-expo';
 
 
 
@@ -26,7 +27,23 @@ export default function SignUpScreen() {
 
   console.log(errors)
 
-  const onSignUp = (data: signUpFields) => {
+  const {signUp, isLoaded} = useSignUp();
+
+  const onSignUp = async (data: signUpFields) => {
+    if (!isLoaded) return;
+
+    try {
+
+      await signUp.create({
+        emailAddress: data.email,
+        password: data.password,
+      });
+
+    } catch (error) {
+      console.error("Sign Up Error:", error);
+      return;
+    }
+
     console.log("Sign Up:", data.email, data.password);
   }
 
@@ -36,7 +53,7 @@ export default function SignUpScreen() {
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
      style={styles.container}>
 
-      <Text style={styles.title}>Login Account</Text>
+      <Text style={styles.title}>Create Account</Text>
 
       <View style={styles.form}>
         <CustomInput
@@ -50,9 +67,10 @@ export default function SignUpScreen() {
         <CustomInput control={control} name='password' placeholder='Password' secureTextEntry/>
       </View>
       
-      <CustomBtn onPress={handleSubmit(onSignUp)} text='Login' />
+      <CustomBtn onPress={handleSubmit(onSignUp)} text='Register Account' />
 
       <Link href='/sign-in' style={styles.link}>Already have an account? Sign in</Link>
+      
 
     </KeyboardAvoidingView>
   );

@@ -4,8 +4,8 @@ import CustomBtn from '@/components/CustomBtn';
 import { useForm } from 'react-hook-form';
 import {z} from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link, router } from 'expo-router';
-import { useAuth } from '@/providers/AuthProvider';
+import { Link } from 'expo-router';
+import { useSignIn } from '@clerk/clerk-expo';
 
 
 
@@ -21,18 +21,40 @@ type signInFields = z.infer<typeof signInSchema>;
 
 export default function SignInScreen() {
 
+  const {signIn, isLoaded, setActive } = useSignIn();
+
   const {control, handleSubmit, formState:{errors}} = useForm<signInFields>({
     resolver: zodResolver(signInSchema),
   })
 
   console.log(errors)
 
-  const { signIn } = useAuth()
 
-  const onSignIn = (data: signInFields) => {
+
+  const onSignIn = async (data: signInFields) => {
+
+    if(!isLoaded) return;
+
+    try {
+      const signInAttempt = await signIn.create({
+        identifier: data.email,
+        password: data.password,
+      });
+
+      if(signInAttempt.status === "complete"){
+        // console.log("Sign In Successful");
+        setActive({ session: signInAttempt.createdSessionId });
+      } else {
+        console.log("Sign In Failed");
+      }
+
+      
+    } catch (error) {
+      console.error("Sign In Error:", error);
+      return;
+    }
+
     console.log("Sign In:", data.email, data.password);
-    signIn();
-    // router.replace('/'); // Redirect to home after sign-in
   }
 
 
@@ -41,7 +63,7 @@ export default function SignInScreen() {
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
      style={styles.container}>
 
-      <Text style={styles.title}>Create an Account</Text>
+      <Text style={styles.title}>Login Account</Text>
 
       <View style={styles.form}>
         <CustomInput
@@ -55,7 +77,7 @@ export default function SignInScreen() {
         <CustomInput control={control} name='password' placeholder='Password' secureTextEntry/>
       </View>
       
-      <CustomBtn onPress={handleSubmit(onSignIn)} text='Sign in' />
+      <CustomBtn onPress={handleSubmit(onSignIn)} text='Login' />
   
       <Link href='/sign-up' style={styles.link}>Dont have an account? Sign up</Link>
 
