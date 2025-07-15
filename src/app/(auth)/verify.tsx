@@ -9,46 +9,47 @@ import { useSignUp } from '@clerk/clerk-expo';
 
 
 
-const signUpSchema = z.object({
-  email: z.string({message:"Email is required"}).email("Invalid email"),
-  password: z.string({message: "Password is required"}).min(8, "Password must be at least 8 characters long"),
+const verifySchema = z.object({
+  code: z.string({message:"Code is required"}).length(6, "Invalid code"),
 });
 
-type signUpFields = z.infer<typeof signUpSchema>;
+type verifyFields = z.infer<typeof verifySchema>;
 
 
 
 
 export default function SignUpScreen() {
 
-  const {control, handleSubmit, formState:{errors}} = useForm<signUpFields>({
-    resolver: zodResolver(signUpSchema),
+  const {control, handleSubmit, formState:{errors}} = useForm<verifyFields>({
+    resolver: zodResolver(verifySchema),
   })
 
   console.log(errors)
 
   const {signUp, isLoaded} = useSignUp();
 
-  const onSignUp = async (data: signUpFields) => {
-    if (!isLoaded) return;
+  const onVerify = async ({code}: verifyFields) => {
+    
+    if(!isLoaded) return;
 
     try {
-
-      await signUp.create({
-        emailAddress: data.email,
-        password: data.password,
+      const signUpAttempt = await signUp.attemptEmailAddressVerification({
+        code,
       });
 
-      await signUp.prepareVerification({ strategy: 'email_code' });
-
-      router.push('/verify');
-
+      if(signUpAttempt.status === "complete"){
+        console.log("Verification Successful");
+        router.replace('/sign-in'); // Redirect to sign-in after verification
+      }else{
+        console.log("Verification Failed");
+        console.log(signUpAttempt);
+      }
     } catch (error) {
-      console.error("Sign Up Error:", error);
+      console.error("Verification Error:", error);
       return;
+      
     }
 
-    console.log("Sign Up:", data.email, data.password);
   }
 
 
@@ -57,25 +58,20 @@ export default function SignUpScreen() {
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
      style={styles.container}>
 
-      <Text style={styles.title}>Create Account</Text>
+      <Text style={styles.title}>Verify your email</Text>
 
       <View style={styles.form}>
         <CustomInput
           control={control}
-          name='email'
-          placeholder='Email'
+          name='code'
+          placeholder='123456'
           autoFocus
-          keyboardType='email-address'
-          autoComplete='email'
+          keyboardType='number-pad'
+          autoComplete='one-time-code'
         />
-        <CustomInput control={control} name='password' placeholder='Password' secureTextEntry/>
       </View>
       
-      <CustomBtn onPress={handleSubmit(onSignUp)} text='Register Account' />
-
-      <Link href='/sign-in' style={styles.link}>Already have an account? Sign in</Link>
-      
-
+      <CustomBtn onPress={handleSubmit(onVerify)} text='Verify' />
     </KeyboardAvoidingView>
   );
 }
