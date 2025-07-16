@@ -1,86 +1,126 @@
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import CustomInput from '@/components/CustomInput';
 import CustomBtn from '@/components/CustomBtn';
 import { useForm } from 'react-hook-form';
-import {z} from 'zod';
+import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'expo-router';
-import { useSignIn } from '@clerk/clerk-expo';
-
-
+import {
+  isClerkAPIResponseError,
+  useSignIn,
+} from '@clerk/clerk-expo';
+import { useState } from 'react';
 
 const signInSchema = z.object({
-  email: z.string({message:"Email is required"}).email("Invalid email"),
-  password: z.string({message: "Password is required"}).min(8, "Password must be at least 8 characters long"),
+  identifier: z.string().min(1, 'Email or Username is required'),
+  password: z
+    .string({ message: 'Password is required' })
+    .min(8, 'Password must be at least 8 characters long'),
 });
 
-type signInFields = z.infer<typeof signInSchema>;
+type SignInFields = z.infer<typeof signInSchema>;
 
-
-
+const mapClerkErrorToFormField = (error: any) => {
+  switch (error.meta?.paramName) {
+    case 'identifier':
+      return 'identifier';
+    case 'password':
+      return 'password';
+    default:
+      return 'root';
+  }
+};
 
 export default function SignInScreen() {
+  const { signIn, isLoaded, setActive } = useSignIn();
+  const [loading, setLoading] = useState(false);
 
-  const {signIn, isLoaded, setActive } = useSignIn();
-
-  const {control, handleSubmit, formState:{errors}} = useForm<signInFields>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setError,
+  } = useForm<SignInFields>({
     resolver: zodResolver(signInSchema),
-  })
+  });
 
-  console.log(errors)
+  const onSignIn = async (data: SignInFields) => {
+    if (!isLoaded || loading) return;
 
-
-
-  const onSignIn = async (data: signInFields) => {
-
-    if(!isLoaded) return;
+    setLoading(true);
 
     try {
       const signInAttempt = await signIn.create({
-        identifier: data.email,
+        identifier: data.identifier,
         password: data.password,
       });
 
-      if(signInAttempt.status === "complete"){
-        // console.log("Sign In Successful");
-        setActive({ session: signInAttempt.createdSessionId });
+      if (signInAttempt.status === 'complete') {
+        await setActive({ session: signInAttempt.createdSessionId });
       } else {
-        console.log("Sign In Failed");
+        setError('root', {
+          message: 'Unexpected authentication flow. Please try again.',
+        });
       }
-
-      
-    } catch (error) {
-      console.error("Sign In Error:", error);
-      return;
+    } catch (err) {
+      if (isClerkAPIResponseError(err)) {
+        err.errors.forEach((error) => {
+          const field = mapClerkErrorToFormField(error);
+          setError(field as any, { message: error.message });
+        });
+      } else {
+        setError('root', {
+          message:
+            'Something went wrong while signing in. Please check your connection and try again.',
+        });
+      }
+    } finally {
+      setLoading(false);
     }
-
-    console.log("Sign In:", data.email, data.password);
-  }
-
-
+  };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
-     style={styles.container}>
-
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+    >
       <Text style={styles.title}>Login Account</Text>
 
       <View style={styles.form}>
         <CustomInput
           control={control}
-          name='email'
-          placeholder='Email'
+          name="identifier"
+          placeholder="Email or Username"
           autoFocus
-          keyboardType='email-address'
-          autoComplete='email'
+          autoCapitalize="none"
         />
-        <CustomInput control={control} name='password' placeholder='Password' secureTextEntry/>
-      </View>
-      
-      <CustomBtn onPress={handleSubmit(onSignIn)} text='Login' />
-  
-      <Link href='/sign-up' style={styles.link}>Dont have an account? Sign up</Link>
+        <CustomInput
+          control={control}
+          name="password"
+          placeholder="Password"
+          secureTextEntry
+        />
 
+        {errors.root && (
+          <Text style={styles.rootError}>{errors.root.message}</Text>
+        )}
+      </View>
+
+      <CustomBtn
+        onPress={handleSubmit(onSignIn)}
+        text={loading ? 'Logging in...' : 'Login'}
+        disabled={loading}
+      />
+
+      <Link href="/sign-up" style={styles.link}>
+        Don’t have an account? Sign up
+      </Link>
     </KeyboardAvoidingView>
   );
 }
@@ -93,19 +133,24 @@ const styles = StyleSheet.create({
     gap: 10,
     padding: 20,
   },
-  title:{
+  title: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
   },
-  form:{
-    gap: 10
+  form: {
+    gap: 10,
   },
-  link:{
+  link: {
     color: '#4353Fd',
     textAlign: 'center',
     marginTop: 10,
     fontSize: 16,
-  }
+  },
+  rootError: {
+    color: 'crimson',
+    marginTop: 5,
+    fontSize: 14,
+  },
 });

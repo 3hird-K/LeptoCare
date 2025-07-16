@@ -1,4 +1,3 @@
-// import { useAuth } from "@/providers/AuthProvider";
 import { Redirect, Slot } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 

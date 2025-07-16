@@ -17,7 +17,7 @@ export default function WelcomeScreen() {
     </View>
   )
 }
-
+ 
 const styles = StyleSheet.create({
   container: {
     flex: 1,

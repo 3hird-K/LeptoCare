@@ -1,77 +1,95 @@
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import CustomInput from '@/components/CustomInput';
 import CustomBtn from '@/components/CustomBtn';
 import { useForm } from 'react-hook-form';
-import {z} from 'zod';
+import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import { useSignUp } from '@clerk/clerk-expo';
-
-
+import { useState } from 'react';
 
 const verifySchema = z.object({
-  code: z.string({message:"Code is required"}).length(6, "Invalid code"),
+  code: z
+    .string({ message: 'Code is required' })
+    .length(6, 'Verification code must be 6 digits'),
 });
 
-type verifyFields = z.infer<typeof verifySchema>;
+type VerifyFields = z.infer<typeof verifySchema>;
 
+export default function VerifyEmailScreen() {
+  const { signUp, isLoaded } = useSignUp();
+  const [loading, setLoading] = useState(false);
 
-
-
-export default function SignUpScreen() {
-
-  const {control, handleSubmit, formState:{errors}} = useForm<verifyFields>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setError,
+  } = useForm<VerifyFields>({
     resolver: zodResolver(verifySchema),
-  })
+  });
 
-  console.log(errors)
+  const onVerify = async ({ code }: VerifyFields) => {
+    if (!isLoaded || loading) return;
 
-  const {signUp, isLoaded} = useSignUp();
-
-  const onVerify = async ({code}: verifyFields) => {
-    
-    if(!isLoaded) return;
+    setLoading(true);
 
     try {
-      const signUpAttempt = await signUp.attemptEmailAddressVerification({
-        code,
-      });
+      const result = await signUp.attemptEmailAddressVerification({ code });
 
-      if(signUpAttempt.status === "complete"){
-        console.log("Verification Successful");
-        router.replace('/sign-in'); // Redirect to sign-in after verification
-      }else{
-        console.log("Verification Failed");
-        console.log(signUpAttempt);
+      if (result.status === 'complete') {
+        console.log('Verification Successful');
+        router.replace('/');
+      } else {
+        console.log('Verification Failed');
+        setError('root', {
+          message: 'Verification failed. Please double-check your code.',
+        });
       }
-    } catch (error) {
-      console.error("Verification Error:", error);
-      return;
-      
+    } catch (error: any) {
+      console.error('Verification Error:', error);
+      setError('root', {
+        message:
+          'An unexpected error occurred during verification. Please try again later.',
+      });
+    } finally {
+      setLoading(false);
     }
-
-  }
-
-
+  };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
-     style={styles.container}>
-
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+    >
       <Text style={styles.title}>Verify your email</Text>
 
       <View style={styles.form}>
         <CustomInput
           control={control}
-          name='code'
-          placeholder='123456'
+          name="code"
+          placeholder="123456"
           autoFocus
-          keyboardType='number-pad'
-          autoComplete='one-time-code'
+          keyboardType="number-pad"
+          autoComplete="one-time-code"
         />
+
+        {errors.root && (
+          <Text style={styles.rootError}>{errors.root.message}</Text>
+        )}
       </View>
-      
-      <CustomBtn onPress={handleSubmit(onVerify)} text='Verify' />
+
+      <CustomBtn
+        onPress={handleSubmit(onVerify)}
+        text={loading ? 'Verifying...' : 'Verify'}
+        disabled={loading}
+      />
     </KeyboardAvoidingView>
   );
 }
@@ -84,19 +102,19 @@ const styles = StyleSheet.create({
     gap: 10,
     padding: 20,
   },
-  title:{
+  title: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
   },
-  form:{
-    gap: 10
+  form: {
+    gap: 10,
   },
-  link:{
-    color: '#4353Fd',
+  rootError: {
+    color: 'crimson',
     textAlign: 'center',
-    marginTop: 10,
-    fontSize: 16,
-  }
+    fontSize: 14,
+    marginTop: 4,
+  },
 });
