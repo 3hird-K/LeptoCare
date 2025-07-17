@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
             // backgroundColor: '#0a1282',
             backgroundColor: '#4353Fd',
             padding: 10,
-            borderRadius: 5,
+            borderRadius: 25,
             alignItems: 'center',
             cursor: 'pointer',
             paddingBlock: 12,
