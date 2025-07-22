@@ -1,11 +1,14 @@
+import ScreenWrapper from "@/components/ScreenWrapper";
 import { View, Text, StyleSheet } from "react-native";
 
 export default function Notification(){
     return (
-        <View style={styles.container}>
-        <Text style={styles.title}>Notifications</Text>
-        <Text style={styles.paragraph}>You have no new notifications.</Text>
-        </View>
+        <ScreenWrapper>
+            <View style={styles.container}>
+                <Text style={styles.title}>Notifications</Text>
+                <Text style={styles.paragraph}>You have no new notifications.</Text>
+            </View>
+        </ScreenWrapper>
     );
 }
 

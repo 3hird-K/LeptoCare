@@ -14,7 +14,7 @@ export default function ProtectedTabsLayout() {
   }
 
   return (
-    <Tabs tabBar={(props) => <AnimatedTabBar {...props} />}>
+    <Tabs screenOptions={{headerShown: false}} tabBar={(props) => <AnimatedTabBar {...props} />}>
       <Tabs.Screen
         name="notification"
         options={{

@@ -11,5 +11,12 @@
   "rateApp": "Rate in App Store",
   "termsPrivacy": "Terms and Privacy",
   "logout": "Log Out",
-  "version": "App Version: under developement"
+  "version": "App Version: under developement",
+  "guide": "Your guide to leptospirosis awareness and prevention",
+  "reading": "Reading guide",
+  "awareness": "Awareness",
+  "prevention": "Prevention",
+  "learn": "Learn more about this disease",
+  "preventionMethod": "Our prevention methods will help...",
+  "review": "Review"
 }

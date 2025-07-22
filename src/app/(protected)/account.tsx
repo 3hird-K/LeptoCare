@@ -19,6 +19,7 @@ import * as Location from 'expo-location';
 import * as Linking from 'expo-linking';
 import * as StoreReview from 'expo-store-review';
 import { router } from 'expo-router';
+import ScreenWrapper from '@/components/ScreenWrapper';
 
 
 export default function Account() {
@@ -120,133 +121,135 @@ export default function Account() {
   const resources = ['contactUs', 'reportBug', 'rateApp', 'termsPrivacy'];
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f8f8' }}>
-      <ScrollView contentContainerStyle={styles.content}>
-        {/* Account Section */}
-        <View style={[styles.section, { paddingTop: 10 }]}>
-          <Text style={styles.sectionTitle}>{t('account')}</Text>
-          <View style={styles.sectionBody}>
-            <TouchableOpacity onPress={() => { /* handle profile tap */ }} style={styles.profile}>
-              <Image
-                alt="Profile Avatar"
-                source={{ uri: avatarUrl }}
-                style={styles.profileAvatar}
-              />
-              <View style={styles.profileBody}>
-                <Text style={styles.profileName}>{user?.fullName}</Text>
-                <Text style={styles.profileHandle}>
-                  {user?.emailAddresses?.[0]?.emailAddress}
-                </Text>
-              </View>
-              <FeatherIcon color="#bcbcbc" name="chevron-right" size={22} />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Preferences Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('preferences')}</Text>
-          <View style={styles.sectionBody}>
-
-            <View style={[styles.rowWrapper, styles.rowFirst]}>
-              <TouchableOpacity onPress={onPressLanguage} style={styles.row}>
-                <Text style={styles.rowLabel}>{t('language')}</Text>
-                <View style={styles.rowSpacer} />
-                <Text style={styles.rowValue}>
-                  {languageLabels[i18n.language] ?? languageLabels.en}
-                </Text>
-                <FeatherIcon name="chevron-right" color="#bcbcbc" size={19} />
+    <ScreenWrapper>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f8f8' }}>
+        <ScrollView contentContainerStyle={styles.content}>
+          {/* Account Section */}
+          <View style={[styles.section, { paddingTop: 10 }]}>
+            <Text style={styles.sectionTitle}>{t('account')}</Text>
+            <View style={styles.sectionBody}>
+              <TouchableOpacity onPress={() => { /* handle profile tap */ }} style={styles.profile}>
+                <Image
+                  alt="Profile Avatar"
+                  source={{ uri: avatarUrl }}
+                  style={styles.profileAvatar}
+                />
+                <View style={styles.profileBody}>
+                  <Text style={styles.profileName}>{user?.fullName}</Text>
+                  <Text style={styles.profileHandle}>
+                    {user?.emailAddresses?.[0]?.emailAddress}
+                  </Text>
+                </View>
+                <FeatherIcon color="#bcbcbc" name="chevron-right" size={22} />
               </TouchableOpacity>
             </View>
-
-            <View style={styles.rowWrapper}>
-              <TouchableOpacity onPress={() => {}} style={styles.row}>
-                <Text style={styles.rowLabel}>{t('location')}</Text>
-                <View style={styles.rowSpacer} />
-                <Text style={styles.rowValue}>{locationLabel}</Text>
-                {/* <FeatherIcon color="#bcbcbc" name="chevron-right" size={19} /> */}
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.rowWrapper}>
-              <View style={styles.row}>
-                <Text style={styles.rowLabel}>{t('emailNotifications')}</Text>
-                <View style={styles.rowSpacer} />
-                <Switch
-                  onValueChange={emailNotifications =>
-                    setForm({ ...form, emailNotifications })
-                  }
-                  style={{ transform: [{ scaleX: 0.95 }, { scaleY: 0.95 }] }}
-                  value={form.emailNotifications}
-                />
-              </View>
-            </View>
-
-            <View style={[styles.rowWrapper, styles.rowLast]}>
-              <View style={styles.row}>
-                <Text style={styles.rowLabel}>{t('pushNotifications')}</Text>
-                <View style={styles.rowSpacer} />
-                <Switch
-                  onValueChange={pushNotifications =>
-                    setForm({ ...form, pushNotifications })
-                  }
-                  style={{ transform: [{ scaleX: 0.95 }, { scaleY: 0.95 }] }}
-                  value={form.pushNotifications}
-                />
-              </View>
-            </View>
           </View>
-        </View>
 
-        {/* Resources Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('resources')}</Text>
-          <View style={styles.sectionBody}>
-            {resources.map((key, idx) => (
-              <View
-                key={key}
-                style={[
-                  styles.rowWrapper,
-                  idx === 0 && styles.rowFirst,
-                  idx === resources.length - 1 && styles.rowLast,
-                ]}
-              >
-                <TouchableOpacity onPress={handlers[key]} style={styles.row}>
-                  <Text style={styles.rowLabel}>{t(key)}</Text>
+          {/* Preferences Section */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('preferences')}</Text>
+            <View style={styles.sectionBody}>
+
+              <View style={[styles.rowWrapper, styles.rowFirst]}>
+                <TouchableOpacity onPress={onPressLanguage} style={styles.row}>
+                  <Text style={styles.rowLabel}>{t('language')}</Text>
                   <View style={styles.rowSpacer} />
-                  <FeatherIcon color="#bcbcbc" name="chevron-right" size={19} />
+                  <Text style={styles.rowValue}>
+                    {languageLabels[i18n.language] ?? languageLabels.en}
+                  </Text>
+                  <FeatherIcon name="chevron-right" color="#bcbcbc" size={19} />
                 </TouchableOpacity>
               </View>
-            ))}
-          </View>
-        </View>
 
-        {/* Logout */}
-        <View style={styles.section}>
-          <View style={styles.sectionBody}>
-            <View
-              style={[
-                styles.rowWrapper,
-                styles.rowFirst,
-                styles.rowLast,
-                { alignItems: 'center' },
-              ]}
-            >
-              <TouchableOpacity onPress={() => signOut()} style={styles.row}>
-                <Text style={[styles.rowLabel, styles.rowLabelLogout]}>
-                  {t('logout')}
-                </Text>
-              </TouchableOpacity>
+              <View style={styles.rowWrapper}>
+                <TouchableOpacity onPress={() => {}} style={styles.row}>
+                  <Text style={styles.rowLabel}>{t('location')}</Text>
+                  <View style={styles.rowSpacer} />
+                  <Text style={styles.rowValue}>{locationLabel}</Text>
+                  {/* <FeatherIcon color="#bcbcbc" name="chevron-right" size={19} /> */}
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.rowWrapper}>
+                <View style={styles.row}>
+                  <Text style={styles.rowLabel}>{t('emailNotifications')}</Text>
+                  <View style={styles.rowSpacer} />
+                  <Switch
+                    onValueChange={emailNotifications =>
+                      setForm({ ...form, emailNotifications })
+                    }
+                    style={{ transform: [{ scaleX: 0.95 }, { scaleY: 0.95 }] }}
+                    value={form.emailNotifications}
+                  />
+                </View>
+              </View>
+
+              <View style={[styles.rowWrapper, styles.rowLast]}>
+                <View style={styles.row}>
+                  <Text style={styles.rowLabel}>{t('pushNotifications')}</Text>
+                  <View style={styles.rowSpacer} />
+                  <Switch
+                    onValueChange={pushNotifications =>
+                      setForm({ ...form, pushNotifications })
+                    }
+                    style={{ transform: [{ scaleX: 0.95 }, { scaleY: 0.95 }] }}
+                    value={form.pushNotifications}
+                  />
+                </View>
+              </View>
             </View>
           </View>
-        </View>
 
-        {/* Footer */}
-        <Text style={styles.contentFooter}>
-          {t('version', { version: '2.24 #50491' })}
-        </Text>
-      </ScrollView>
-    </SafeAreaView>
+          {/* Resources Section */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('resources')}</Text>
+            <View style={styles.sectionBody}>
+              {resources.map((key, idx) => (
+                <View
+                  key={key}
+                  style={[
+                    styles.rowWrapper,
+                    idx === 0 && styles.rowFirst,
+                    idx === resources.length - 1 && styles.rowLast,
+                  ]}
+                >
+                  <TouchableOpacity onPress={handlers[key]} style={styles.row}>
+                    <Text style={styles.rowLabel}>{t(key)}</Text>
+                    <View style={styles.rowSpacer} />
+                    <FeatherIcon color="#bcbcbc" name="chevron-right" size={19} />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          </View>
+
+          {/* Logout */}
+          <View style={styles.section}>
+            <View style={styles.sectionBody}>
+              <View
+                style={[
+                  styles.rowWrapper,
+                  styles.rowFirst,
+                  styles.rowLast,
+                  { alignItems: 'center' },
+                ]}
+              >
+                <TouchableOpacity onPress={() => signOut()} style={styles.row}>
+                  <Text style={[styles.rowLabel, styles.rowLabelLogout]}>
+                    {t('logout')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+
+          {/* Footer */}
+          <Text style={styles.contentFooter}>
+            {t('version', { version: '2.24 #50491' })}
+          </Text>
+        </ScrollView>
+      </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 

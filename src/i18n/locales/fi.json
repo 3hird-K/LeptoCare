@@ -11,5 +11,12 @@
   "rateApp": "I-rate sa App Store",
   "termsPrivacy": "Mga Tuntunin at Privacy",
   "logout": "Mag-logout",
-  "version": "Bersyon ng App: kasalukuyang ginagawa"
+  "version": "Bersyon ng App: kasalukuyang ginagawa",
+  "guide": "Ang iyong gabay sa kaalaman at pag-iwas sa leptospirosis",
+  "reading": "Gabay sa pagbabasa",
+  "awareness": "Kaalaman",
+  "prevention": "Pag-iwas",
+  "learn": "Alamin pa ang tungkol sa sakit na ito",
+  "preventionMethod": "Makakatulong ang aming mga paraan ng pag-iwas...",
+  "review": "Suriin"
 }
