@@ -1,0 +1,15 @@
+{
+  "account": "Account",
+  "preferences": "Preferences",
+  "resources": "Resources",
+  "language": "Language",
+  "location": "Location",
+  "emailNotifications": "Email Notifications",
+  "pushNotifications": "Push Notifications",
+  "contactUs": "Contact Us",
+  "reportBug": "Report Bug",
+  "rateApp": "Rate in App Store",
+  "terms": "Terms and Privacy",
+  "logout": "Log Out",
+  "version": "App Version: under developement"
+}
