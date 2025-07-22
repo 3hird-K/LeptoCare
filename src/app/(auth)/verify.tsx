@@ -57,7 +57,7 @@ export default function VerifyEmailScreen() {
       const result = await signUp.attemptEmailAddressVerification({ code });
       if (result.status === 'complete') {
         await setActive({ session: result.createdSessionId });
-        router.push('/');
+        router.push('/terms');
       } else {
         setError('code', {
           message: 'Verification failed. Please double-check your code.',

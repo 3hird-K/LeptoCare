@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -8,14 +8,20 @@ import {
   TouchableOpacity,
   Switch,
   Image,
+  Platform,
 } from 'react-native';
 import FeatherIcon from '@expo/vector-icons/Feather';
 import { useUser, useAuth } from '@clerk/clerk-expo';
 import i18n from '@/i18n/config'; // Ensure i18n is initialized
 import { useTranslation } from 'react-i18next';
 import { useActionSheet } from '@expo/react-native-action-sheet';
+import * as Location from 'expo-location';
+import * as Linking from 'expo-linking';
+import * as StoreReview from 'expo-store-review';
+import { router } from 'expo-router';
 
-export default function Settings() {
+
+export default function Account() {
   const [form, setForm] = useState({
     emailNotifications: true,
     pushNotifications: false,
@@ -25,6 +31,21 @@ export default function Settings() {
   const { signOut } = useAuth();
   const { t } = useTranslation();
   const { showActionSheetWithOptions } = useActionSheet();
+  const [locationLabel, setLocationLabel] = useState<string>(t('loading') || 'Loading...');
+
+  useEffect(() => {
+  (async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      setLocationLabel(t('permissionDenied') || 'Permission denied');
+      return;
+    }
+    const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+    const [place] = await Location.reverseGeocodeAsync(loc.coords);
+    const label = [place.city, place.region].filter(Boolean).join(', ') || place.country || '';
+    setLocationLabel(label);
+  })();
+}, []);
 
   const languageLabels: Record<string, string> = {
     en: 'English',
@@ -53,6 +74,50 @@ export default function Settings() {
     !user?.imageUrl || user.imageUrl.includes('clerk.dev/static')
       ? defaultAvatar
       : user.imageUrl;
+
+
+  //  expo-linking and expo-store-review are used for handling links and app reviews
+  const onPressContact = () => {
+    const email = 'dime.neil03@gmail.com';
+    const mailto = `mailto:${email}?subject=${encodeURIComponent('Support Request')}`;
+    Linking.openURL(mailto).catch(err => console.error('Email client error', err));
+  };
+
+  const onPressReport = () => {
+    const email = 'dime.neil03@gmail.com';
+    const mailto = `mailto:${email}?subject=${encodeURIComponent('Bug Report')}`;
+    Linking.openURL(mailto).catch(err => console.error('Email client error', err));
+  };
+
+  const onPressRate = async () => {
+    if (await StoreReview.hasAction()) {
+      StoreReview.requestReview();
+    } else {
+      const androidAppId = 'com.yourcompany.yourapp'; // Replace with your actual Android app ID
+      const url = Platform.select({
+        ios: `itms-apps://itunes.apple.com/app/idYOUR_APP_ID?action=write-review`,
+        android: `market://details?id=${androidAppId}`,
+      });
+      if (url) Linking.openURL(url).catch(err => console.error('Cannot open store', err));
+    }
+  };
+
+  const onPressTerms = () => {
+    router.push('/terms'); // Navigate to the Terms and Privacy screen
+  };
+  // const onPressTerms = () => {
+  //   const url = 'https://www.freeprivacypolicy.com/live/902dc431-9348-4d73-af90-55e5fcadf72d';
+  //   Linking.openURL(url).catch(err => console.error('Cannot open URL', err));
+  // };
+
+  const handlers: Record<string, () => void> = {
+    contactUs: onPressContact,
+    reportBug: onPressReport,
+    rateApp: onPressRate,
+    termsPrivacy: onPressTerms,
+  };
+
+  const resources = ['contactUs', 'reportBug', 'rateApp', 'termsPrivacy'];
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f8f8' }}>
@@ -98,8 +163,8 @@ export default function Settings() {
               <TouchableOpacity onPress={() => {}} style={styles.row}>
                 <Text style={styles.rowLabel}>{t('location')}</Text>
                 <View style={styles.rowSpacer} />
-                <Text style={styles.rowValue}>Los Angeles, CA</Text>
-                <FeatherIcon color="#bcbcbc" name="chevron-right" size={19} />
+                <Text style={styles.rowValue}>{locationLabel}</Text>
+                {/* <FeatherIcon color="#bcbcbc" name="chevron-right" size={19} /> */}
               </TouchableOpacity>
             </View>
 
@@ -137,16 +202,16 @@ export default function Settings() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t('resources')}</Text>
           <View style={styles.sectionBody}>
-            {['contactUs', 'reportBug', 'rateApp', 'termsPrivacy'].map((key, idx, arr) => (
+            {resources.map((key, idx) => (
               <View
                 key={key}
                 style={[
                   styles.rowWrapper,
                   idx === 0 && styles.rowFirst,
-                  idx === arr.length - 1 && styles.rowLast,
+                  idx === resources.length - 1 && styles.rowLast,
                 ]}
               >
-                <TouchableOpacity onPress={() => {}} style={styles.row}>
+                <TouchableOpacity onPress={handlers[key]} style={styles.row}>
                   <Text style={styles.rowLabel}>{t(key)}</Text>
                   <View style={styles.rowSpacer} />
                   <FeatherIcon color="#bcbcbc" name="chevron-right" size={19} />

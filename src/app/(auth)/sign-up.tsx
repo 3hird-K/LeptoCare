@@ -62,6 +62,63 @@ export default function SignUpScreen() {
     resolver: zodResolver(signUpSchema),
   });
 
+
+  console.log(errors)
+
+//   const onSignUp = async (data: SignUpFields) => {
+//   if (!isLoaded || loading) return;
+//   setLoading(true);
+
+//   try {
+//     console.log('Submitting data:', data);
+
+//     // Step 1: Create the sign-up
+//     await signUp.create({
+//       emailAddress: data.email,
+//       password: data.password,
+//     });
+
+//     // Step 2: Update with other required fields if needed
+//     await signUp.update({
+//       firstName: data.name,
+//       lastName: data.lastName,
+//       username: data.username,
+//     });
+
+//     console.log('After update:', JSON.stringify(signUp, null, 2));
+
+//     // Step 3: Check if email verification is required
+//     if (
+//       signUp.status === 'missing_requirements' ||
+//       !signUp.verifications.emailAddress.supportedStrategies?.includes('email_code')
+//     ) {
+//       setError('root', {
+//         message: `Signup incomplete. Status: ${signUp.status}.`,
+//       });
+//       return;
+//     }
+
+//     // Step 4: Prepare email verification
+//     await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
+
+//     // Step 5: Go to verify screen
+//     router.push('/verify');
+//   } catch (err) {
+//     if (isClerkAPIResponseError(err)) {
+//       err.errors.forEach((error) => {
+//         const field = mapClerkErrorToFormField(error);
+//         setError(field as any, { message: error.message });
+//       });
+//     } else {
+//       setError('root', {
+//         message: 'An unexpected error occurred. Please try again.',
+//       });
+//     }
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+
   const onSignUp = async (data: SignUpFields) => {
     if (!isLoaded || loading) return;
     setLoading(true);
@@ -74,12 +131,14 @@ export default function SignUpScreen() {
         lastName: data.lastName,
         username: data.username,
       });
+      console.log('SignUp object after create:', signUp);
 
-      await signUp.prepareVerification({ strategy: 'email_code' });
+      await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
+
 
       router.push('/verify');
     } catch (err) {
-      // console.error('Sign Up Error:', JSON.stringify(err, null, 2));
+      console.error('Sign Up Error:', JSON.stringify(err, null, 2));
 
       if (isClerkAPIResponseError(err)) {
         err.errors.forEach((error) => {

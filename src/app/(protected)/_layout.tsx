@@ -2,6 +2,7 @@ import { Redirect, Tabs } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
 import '../../i18n/config';
+import AnimatedTabBar from "@/components/AnimatedTabBar";
 
 export default function ProtectedTabsLayout() {
   const { isLoaded, isSignedIn } = useAuth();
@@ -13,35 +14,25 @@ export default function ProtectedTabsLayout() {
   }
 
   return (
-    <Tabs>
-        <Tabs.Screen
-            name="notification"
-            options={{
-            title: "Notifications",
-            tabBarIcon: ({ color, size }) => (
-                <Ionicons name="notifications-outline" size={size} color={color} />
-            ),
-            }}
-        />
-        <Tabs.Screen
-            name="index"
-            options={{
-            title: "Home",
-            tabBarIcon: ({ color, size }) => (
-                <Ionicons name="home-outline" size={size} color={color} />
-            ),
-            }}
-        />
-        <Tabs.Screen
-            name="account"
-            options={{
-            title: "Account",
-            tabBarIcon: ({ color, size }) => (
-                <Ionicons name="person-outline" size={size} color={color} />
-            ),
-            }}
-        />
-      
+    <Tabs tabBar={(props) => <AnimatedTabBar {...props} />}>
+      <Tabs.Screen
+        name="notification"
+        options={{
+          title: "Notifications",
+        }}
+      />
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "Home",
+        }}
+      />
+      <Tabs.Screen
+        name="account"
+        options={{
+          title: "Account Settings",
+        }}
+      />
     </Tabs>
   );
 }
