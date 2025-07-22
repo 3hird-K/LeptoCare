@@ -1,6 +1,7 @@
 import { Redirect, Tabs } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
+import '../../i18n/config';
 
 export default function ProtectedTabsLayout() {
   const { isLoaded, isSignedIn } = useAuth();

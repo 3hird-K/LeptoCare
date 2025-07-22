@@ -1,0 +1,15 @@
+{
+  "account": "Account",
+  "preferences": "Mga Kagustuhan",
+  "resources": "Mga Sanggunian",
+  "language": "Wika",
+  "location": "Lokasyon",
+  "emailNotifications": "Mga Abiso sa Email",
+  "pushNotifications": "Push na Abiso",
+  "contactUs": "Makipag-ugnayan sa Amin",
+  "reportBug": "I-ulat ang Mali",
+  "rateApp": "I-rate sa App Store",
+  "terms": "Mga Tuntunin at Privacy",
+  "logout": "Mag-logout",
+  "version": "Bersyon ng App: kasalukuyang ginagawa"
+}
