@@ -12,11 +12,11 @@ import Animated, {
 import { Ionicons } from '@expo/vector-icons';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
-type TabKey = 'notification' | 'index' | 'account';
+type TabKey = 'notification' | 'home' | 'account';
 
 const TABS: Record<TabKey, { icon: string }> = {
   notification: { icon: 'notifications-outline' },
-  index: { icon: 'home-outline' },
+  home: { icon: 'home-outline' },
   account: { icon: 'person-outline' },
 };
 

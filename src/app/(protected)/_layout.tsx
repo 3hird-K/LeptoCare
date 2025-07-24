@@ -1,6 +1,5 @@
 import { Redirect, Tabs } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
-import { Ionicons } from "@expo/vector-icons";
 import '../../i18n/config';
 import AnimatedTabBar from "@/components/AnimatedTabBar";
 
@@ -14,7 +13,7 @@ export default function ProtectedTabsLayout() {
   }
 
   return (
-    <Tabs screenOptions={{headerShown: false}} tabBar={(props) => <AnimatedTabBar {...props} />}>
+    <Tabs screenOptions={{headerShown: false}}  tabBar={(props) => <AnimatedTabBar {...props} />}>
       <Tabs.Screen
         name="notification"
         options={{
@@ -22,7 +21,7 @@ export default function ProtectedTabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           title: "Home",
         }}

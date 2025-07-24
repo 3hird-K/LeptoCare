@@ -12,15 +12,16 @@ import {
 } from 'react-native';
 import FeatherIcon from '@expo/vector-icons/Feather';
 import { useUser, useAuth } from '@clerk/clerk-expo';
-import i18n from '@/i18n/config'; // Ensure i18n is initialized
+import i18n from '@/i18n/config';
 import { useTranslation } from 'react-i18next';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import * as Location from 'expo-location';
 import * as Linking from 'expo-linking';
 import * as StoreReview from 'expo-store-review';
+import * as SecureStore from 'expo-secure-store';
 import { router } from 'expo-router';
 import ScreenWrapper from '@/components/ScreenWrapper';
-
+import { saveLanguageToMetadata } from '@/utils/languageStore';
 
 export default function Account() {
   const [form, setForm] = useState({
@@ -35,40 +36,54 @@ export default function Account() {
   const [locationLabel, setLocationLabel] = useState<string>(t('loading') || 'Loading...');
 
   useEffect(() => {
-  (async () => {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      setLocationLabel(t('permissionDenied') || 'Permission denied');
-      return;
-    }
-    const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-    const [place] = await Location.reverseGeocodeAsync(loc.coords);
-    const label = [place.city, place.region].filter(Boolean).join(', ') || place.country || '';
-    setLocationLabel(label);
-  })();
-}, []);
+    (async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setLocationLabel(t('permissionDenied') || 'Permission denied');
+        return;
+      }
+      const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+      const [place] = await Location.reverseGeocodeAsync(loc.coords);
+      const label = [place.city, place.region].filter(Boolean).join(', ') || place.country || '';
+      setLocationLabel(label);
+    })();
+  }, []);
 
   const languageLabels: Record<string, string> = {
     en: 'English',
     cb: 'Cebuano',
     fi: 'Filipino',
   };
+
   const languages = ['en', 'cb', 'fi'];
 
   const onPressLanguage = () => {
-  const options = languages.map(code => languageLabels[code]);
-  options.push(t('Cancel'));
-  const cancelIndex = options.length - 1;
+    const options = languages.map(code => languageLabels[code]);
+    options.push(t('Cancel'));
+    const cancelIndex = options.length - 1;
 
-  showActionSheetWithOptions(
-    { options, cancelButtonIndex: cancelIndex },
-    (buttonIndex) => {
-      if (buttonIndex === undefined || buttonIndex === cancelIndex) return;
-      const newLang = languages[buttonIndex];
-      i18n.changeLanguage(newLang);
-    }
-  );
-};
+    showActionSheetWithOptions(
+      { options, cancelButtonIndex: cancelIndex },
+      async (buttonIndex) => {
+        if (buttonIndex === undefined || buttonIndex === cancelIndex) return;
+
+        const newLang = languages[buttonIndex];
+        await i18n.changeLanguage(newLang);
+
+        if (user?.id) {
+          await saveLanguageToMetadata(newLang, user.id); // ✅ Save per-user
+
+          try {
+            const langKey = `lang_${user.id}`;
+            await SecureStore.setItemAsync(langKey, newLang); // ✅ Save locally
+          } catch (err) {
+            console.error('Failed to save language to SecureStore:', err);
+          }
+        }
+      }
+    );
+  };
+
 
   const defaultAvatar = 'https://i.pravatar.cc/150';
   const avatarUrl =
@@ -76,8 +91,6 @@ export default function Account() {
       ? defaultAvatar
       : user.imageUrl;
 
-
-  //  expo-linking and expo-store-review are used for handling links and app reviews
   const onPressContact = () => {
     const email = 'dime.neil03@gmail.com';
     const mailto = `mailto:${email}?subject=${encodeURIComponent('Support Request')}`;
@@ -104,12 +117,8 @@ export default function Account() {
   };
 
   const onPressTerms = () => {
-    router.push('/terms'); // Navigate to the Terms and Privacy screen
+    router.push('/terms');
   };
-  // const onPressTerms = () => {
-  //   const url = 'https://www.freeprivacypolicy.com/live/902dc431-9348-4d73-af90-55e5fcadf72d';
-  //   Linking.openURL(url).catch(err => console.error('Cannot open URL', err));
-  // };
 
   const handlers: Record<string, () => void> = {
     contactUs: onPressContact,
@@ -128,12 +137,8 @@ export default function Account() {
           <View style={[styles.section, { paddingTop: 10 }]}>
             <Text style={styles.sectionTitle}>{t('account')}</Text>
             <View style={styles.sectionBody}>
-              <TouchableOpacity onPress={() => { /* handle profile tap */ }} style={styles.profile}>
-                <Image
-                  alt="Profile Avatar"
-                  source={{ uri: avatarUrl }}
-                  style={styles.profileAvatar}
-                />
+              <TouchableOpacity onPress={() => {}} style={styles.profile}>
+                <Image alt="Profile Avatar" source={{ uri: avatarUrl }} style={styles.profileAvatar} />
                 <View style={styles.profileBody}>
                   <Text style={styles.profileName}>{user?.fullName}</Text>
                   <Text style={styles.profileHandle}>
@@ -166,7 +171,6 @@ export default function Account() {
                   <Text style={styles.rowLabel}>{t('location')}</Text>
                   <View style={styles.rowSpacer} />
                   <Text style={styles.rowValue}>{locationLabel}</Text>
-                  {/* <FeatherIcon color="#bcbcbc" name="chevron-right" size={19} /> */}
                 </TouchableOpacity>
               </View>
 
@@ -175,9 +179,7 @@ export default function Account() {
                   <Text style={styles.rowLabel}>{t('emailNotifications')}</Text>
                   <View style={styles.rowSpacer} />
                   <Switch
-                    onValueChange={emailNotifications =>
-                      setForm({ ...form, emailNotifications })
-                    }
+                    onValueChange={emailNotifications => setForm({ ...form, emailNotifications })}
                     style={{ transform: [{ scaleX: 0.95 }, { scaleY: 0.95 }] }}
                     value={form.emailNotifications}
                   />
@@ -189,9 +191,7 @@ export default function Account() {
                   <Text style={styles.rowLabel}>{t('pushNotifications')}</Text>
                   <View style={styles.rowSpacer} />
                   <Switch
-                    onValueChange={pushNotifications =>
-                      setForm({ ...form, pushNotifications })
-                    }
+                    onValueChange={pushNotifications => setForm({ ...form, pushNotifications })}
                     style={{ transform: [{ scaleX: 0.95 }, { scaleY: 0.95 }] }}
                     value={form.pushNotifications}
                   />

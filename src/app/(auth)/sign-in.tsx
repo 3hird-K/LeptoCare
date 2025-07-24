@@ -24,6 +24,7 @@ import CustomInputPassword from '@/components/CustomInputPassword';
 import SignInWithGoogle from '@/components/SignInWithGoogle';
 import SignInWithGithub from '@/components/SignInWithGithub';
 import SignInWithFacebook from '@/components/SignInWithFacebook';
+import ScreenWrapper from '@/components/ScreenWrapper';
 
 
 
@@ -135,143 +136,145 @@ export default function SignInScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-    >
-      <Animated.View
-        style={[
-          styles.form,
-          {
-            opacity: inputAnim,
-            transform: [
-              {
-                translateY: inputAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [40, 0],
-                }),
-              },
-            ],
-          },
-        ]}
-      >
+    <ScreenWrapper>
+          <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.container}
+        >
           <Animated.View
             style={[
-              styles.logoWrapper,
+              styles.form,
               {
-                opacity: logoAnim,
+                opacity: inputAnim,
                 transform: [
                   {
-                    scale: logoAnim.interpolate({
+                    translateY: inputAnim.interpolate({
                       inputRange: [0, 1],
-                      outputRange: [0.6, 1],
+                      outputRange: [40, 0],
                     }),
                   },
                 ],
               },
             ]}
           >
-              <Animated.Image
-                source={require('@assets/lepto_.png')}
-                style={styles.logo}
-                resizeMode="cover"
-              />
-          </Animated.View>
-
-          <Animated.View style={{ gap:12, marginTop: 0, paddingTop: 0 }}>
-
-                <Text style={styles.title}>Hello Again!</Text>
-                <Text style={styles.subtitle}>Log into your account</Text>
-
-              
-                <CustomInput
-                  control={control}
-                  name="identifier"
-                  placeholder="Email or Username"
-                  autoFocus
-                  autoCapitalize="none"
-                />
-                <CustomInputPassword
-                  control={control}
-                  name="password"
-                  placeholder="Password"
-                  secureTextEntry={!showPassword}
-                  rightElement={
-                    <Feather
-                      name={showPassword ? 'eye' : 'eye-off'}
-                      size={15}
-                      color="#a1a1a1"
-                      onPress={() => setShowPassword((prev) => !prev)}
-                    />
-                  }
-                />
-
-                {errors.root && (
-                  <Text style={styles.rootError}>{errors.root.message}</Text>
-                )}
-              
-              <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-                <CustomBtn
-                  onPress={handleSubmit(onSignIn)}
-                  text={'Login'}
-                  disabled={loading}
-                />
-
+              <Animated.View
+                style={[
+                  styles.logoWrapper,
+                  {
+                    opacity: logoAnim,
+                    transform: [
+                      {
+                        scale: logoAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [0.6, 1],
+                        }),
+                      },
+                    ],
+                  },
+                ]}
+              >
+                  <Animated.Image
+                    source={require('@assets/lepto_.png')}
+                    style={styles.logo}
+                    resizeMode="cover"
+                  />
               </Animated.View>
 
-                <Text style={styles.txtLink}>
-                  Don’t have an account? &nbsp; 
-                  <Link href="/sign-up" style={styles.link}>
-                  Sign up
-                </Link>
-                </Text>
+              <Animated.View style={{ gap:12, marginTop: 0, paddingTop: 0 }}>
 
-                {loading && (
-                  <View style={styles.loadingOverlay}>
-                    <Animated.View
-                      style={[
-                        styles.loadingContainer,
-                        {
-                          transform: [
+                    <Text style={styles.title}>Hello Again!</Text>
+                    <Text style={styles.subtitle}>Log into your account</Text>
+
+                  
+                    <CustomInput
+                      control={control}
+                      name="identifier"
+                      placeholder="Email or Username"
+                      autoFocus
+                      autoCapitalize="none"
+                    />
+                    <CustomInputPassword
+                      control={control}
+                      name="password"
+                      placeholder="Password"
+                      secureTextEntry={!showPassword}
+                      rightElement={
+                        <Feather
+                          name={showPassword ? 'eye' : 'eye-off'}
+                          size={15}
+                          color="#a1a1a1"
+                          onPress={() => setShowPassword((prev) => !prev)}
+                        />
+                      }
+                    />
+
+                    {errors.root && (
+                      <Text style={styles.rootError}>{errors.root.message}</Text>
+                    )}
+                  
+                  <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+                    <CustomBtn
+                      onPress={handleSubmit(onSignIn)}
+                      text={'Login'}
+                      disabled={loading}
+                    />
+
+                  </Animated.View>
+
+                    <Text style={styles.txtLink}>
+                      Don’t have an account? &nbsp; 
+                      <Link href="/sign-up" style={styles.link}>
+                      Sign up
+                    </Link>
+                    </Text>
+
+                    {loading && (
+                      <View style={styles.loadingOverlay}>
+                        <Animated.View
+                          style={[
+                            styles.loadingContainer,
                             {
-                              scale: inputAnim.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [0.8, 1],
-                              }),
+                              transform: [
+                                {
+                                  scale: inputAnim.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [0.8, 1],
+                                  }),
+                                },
+                              ],
                             },
-                          ],
-                        },
-                      ]}
-                    >
-                      <ActivityIndicator size="large"  />
-                      <Text style={styles.loadingText}>Logging in...</Text>
-                    </Animated.View>
-                  </View>
-                )}  
+                          ]}
+                        >
+                          <ActivityIndicator size="large"  />
+                          <Text style={styles.loadingText}>Logging in...</Text>
+                        </Animated.View>
+                      </View>
+                    )}  
 
-        </Animated.View>
+            </Animated.View>
 
 
-      </Animated.View>
+          </Animated.View>
 
 
-      <View style={styles.dividerContainer}>
-        <View style={styles.line} />
-        <Text style={styles.orText}>or</Text>
-        <View style={styles.line} />
-      </View>
+          <View style={styles.dividerContainer}>
+            <View style={styles.line} />
+            <Text style={styles.orText}>or</Text>
+            <View style={styles.line} />
+          </View>
 
-      <View style={styles.socialContainer}>
-        <SignInWithGoogle />
-        <View style={{ width: 12 }} />
-        <SignInWithGithub />
-        <View style={{ width: 12 }} />
-        <SignInWithFacebook />
-      </View> 
+          <View style={styles.socialContainer}>
+            <SignInWithGoogle />
+            <View style={{ width: 12 }} />
+            <SignInWithGithub />
+            <View style={{ width: 12 }} />
+            <SignInWithFacebook />
+          </View> 
 
 
 
-    </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+    </ScreenWrapper>
   );
 }
 
