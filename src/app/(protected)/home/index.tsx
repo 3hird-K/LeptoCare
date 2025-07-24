@@ -59,7 +59,7 @@ export default function HomeScreen() {
     <ScreenWrapper>
       <ScrollView contentContainerStyle={styles.container}>
         {/* Header */}
-        <Text style={styles.header}>
+        <Text style={[styles.header, {marginBottom: 1}]}>
           Hi, {user?.username || user?.firstName || 'User'}!
         </Text>
         <Text style={styles.header}>{t('welcome')}</Text>
@@ -73,7 +73,7 @@ export default function HomeScreen() {
             </Text>
             <View style={styles.switchRow}>
               <Text style={styles.switchLabel}>
-                {awarenessRead ? 'Marked as Read' : 'Mark as Read'}
+                {awarenessRead ? t('markAsUnread') : t('markAsRead')}
               </Text>
               <Switch value={awarenessRead} onValueChange={toggleAwareness} />
             </View>
@@ -101,7 +101,7 @@ export default function HomeScreen() {
             </Text>
             <View style={styles.switchRow}>
               <Text style={styles.switchLabel}>
-                {preventionRead ? 'Marked as Read' : 'Mark as Read'}
+                {preventionRead ? t('markAsUnread') : t('markAsRead')}
               </Text>
               <Switch value={preventionRead} onValueChange={togglePrevention} />
             </View>
@@ -113,7 +113,12 @@ export default function HomeScreen() {
             style={styles.icon}
             resizeMode="contain"
           />
-          <CustomBtn text={preventionRead ? t('reviewed') : t('review')} onPress={() => {}} />
+          <CustomBtn 
+            text={preventionRead ? t('reviewed') : t('review')}
+            onPress={() => {
+              router.push('/home/prevention');
+            }}
+          />
         </View>
       </ScrollView>
     </ScreenWrapper>
