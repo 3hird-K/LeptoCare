@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react'; 
 import {
   Text,
   View,
@@ -18,10 +18,24 @@ import { router } from 'expo-router';
 import CustomBtn from '@/components/CustomBtn';
 
 const verifySchema = z.object({
-  code: z.string().length(6, 'Code must be 6 digits'),
+  code: z.string().length(6, 'Please enter the 6-digit verification code.'),
 });
 
 type VerifyFields = z.infer<typeof verifySchema>;
+
+const getFriendlyErrorMessage = (message: string) => {
+  switch (message.toLowerCase()) {
+    case 'failed':
+    case 'is incorrect':
+      return 'The verification code you entered is incorrect.';
+    case 'too many requests. please try again in a bit.':
+      return 'You’ve tried too many times. Please wait a moment and try again.';
+    case 'enter code.':
+      return 'Please enter the 6-digit verification code.';
+    default:
+      return message;
+  }
+};
 
 export default function VerifyEmailScreen() {
   const { signUp, isLoaded, setActive } = useSignUp();
@@ -30,7 +44,10 @@ export default function VerifyEmailScreen() {
   const [codeDigits, setCodeDigits] = useState(['', '', '', '', '', '']);
   const inputsRef = useRef<Array<TextInput | null>>([]);
 
-  const { setError } = useForm<VerifyFields>({
+  const {
+    setError,
+    formState: { errors },
+  } = useForm<VerifyFields>({
     resolver: zodResolver(verifySchema),
   });
 
@@ -60,13 +77,15 @@ export default function VerifyEmailScreen() {
         router.push('/terms');
       } else {
         setError('code', {
-          message: 'Verification failed. Please double-check your code.',
+          message: getFriendlyErrorMessage('Verification failed. Please double-check your code.'),
         });
       }
     } catch (err) {
       if (isClerkAPIResponseError(err)) {
         err.errors.forEach((error) => {
-          setError('code', { message: error.message });
+          setError('code', {
+            message: getFriendlyErrorMessage(error.message),
+          });
         });
       } else {
         setError('code', {
@@ -112,6 +131,11 @@ export default function VerifyEmailScreen() {
           ))}
         </View>
 
+        {/* Display error message if any */}
+        {errors.code && (
+          <Text style={styles.errorText}>{errors.code.message}</Text>
+        )}
+
         <CustomBtn
           onPress={() => onVerify(codeDigits.join(''))}
           text="Verify"
@@ -137,14 +161,14 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '30%',
     justifyContent: 'center',
-    marginTop: 20
+    marginTop: 20,
   },
   container: {
     flex: 1,
     justifyContent: 'center',
     gap: 10,
     padding: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0.01)', // Optional white overlay for readability
+    backgroundColor: 'rgba(255, 255, 255, 0.01)',
   },
   title: {
     fontSize: 24,
@@ -164,7 +188,7 @@ const styles = StyleSheet.create({
   otpContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   otpInput: {
     width: 48,
@@ -175,6 +199,14 @@ const styles = StyleSheet.create({
     fontSize: 24,
     textAlign: 'center',
     backgroundColor: '#f9f9f9',
+  },
+  errorText: {
+    color: '#D8000C',
+    // backgroundColor: '#FFD2D2',
+    padding: 8,
+    borderRadius: 8,
+    textAlign: 'center',
+    marginBottom: 12,
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,

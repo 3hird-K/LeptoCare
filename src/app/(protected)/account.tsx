@@ -33,7 +33,7 @@ export default function Account() {
   const { signOut } = useAuth();
   const { t } = useTranslation();
   const { showActionSheetWithOptions } = useActionSheet();
-  const [locationLabel, setLocationLabel] = useState<string>(t('loading') || 'Loading...');
+  const [locationLabel, setLocationLabel] = useState<string>(t('Turn on your location.') || 'Loading...');
 
   useEffect(() => {
     (async () => {

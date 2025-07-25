@@ -213,7 +213,7 @@ export default function TermsPrivacyScreen() {
 
   const onPressAccept = () => {
     if (accepted) {
-      router.push('/');
+      router.push('/home');
     }
   };
 
@@ -249,7 +249,7 @@ export default function TermsPrivacyScreen() {
           onPress={onPressAccept}
         >
           <Text style={styles.proceedText}>
-            Proceed
+            Accept
           </Text>
         </TouchableOpacity>
       </View>
