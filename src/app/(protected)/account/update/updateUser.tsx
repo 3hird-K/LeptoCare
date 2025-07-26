@@ -16,6 +16,7 @@ import { useRouter } from 'expo-router';
 import Modal from 'react-native-modal';
 import ScreenWrapper from '@/components/ScreenWrapper';
 import { useTranslation } from 'react-i18next';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function ProfileEditScreen() {
   const { user } = useUser();
@@ -28,6 +29,8 @@ export default function ProfileEditScreen() {
   const [newImageFile, setNewImageFile] = useState<File | null>(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const [usernameError, setUsernameError] = useState('');
+  const [firstNameError, setFirstNameError] = useState('');
+  const [lastNameError, setLastNameError] = useState('');
 
   useEffect(() => {
     if (user) {
@@ -81,39 +84,57 @@ export default function ProfileEditScreen() {
       setNewImageFile(imageFile);
     }
   };
+  
 
-  const handleUpdate = async () => {
-  try {
-    setUsernameError(''); // Reset error before submitting
-    const updates: any = {};
+    const handleUpdate = async () => {
+      setUsernameError('');
+      setFirstNameError('');
+      setLastNameError('');
 
-    if (firstName !== user?.firstName) updates.firstName = firstName;
-    if (lastName !== user?.lastName) updates.lastName = lastName;
-    if (username !== user?.username) updates.username = username;
+      let hasError = false;
 
-    if (Object.keys(updates).length > 0) {
-      await user?.update(updates);
-    }
+      if (firstName.trim() === '') {
+        setFirstNameError('First name is required.');
+        hasError = true;
+      }
 
-    if (newImageFile) {
-      await user?.setProfileImage({ file: newImageFile });
-    }
+      if (lastName.trim() === '') {
+        setLastNameError('Last name is required.');
+        hasError = true;
+      }
 
-    Alert.alert('Success', 'Your profile has been updated.');
-    router.back();
-  } catch (error: any) {
-    // Check for Clerk duplicate username error (usually code "form_identifier_exists")
-    if (
-      error.errors &&
-      Array.isArray(error.errors) &&
-      error.errors[0]?.code === 'form_identifier_exists'
-    ) {
-      setUsernameError('This username is already taken.');
-    } else {
-      Alert.alert('Error', 'Something went wrong. Please try again.');
-    }
-  }
-};
+      if (hasError) return;
+      
+      try {
+        const updates: any = {};
+
+        if (firstName !== user?.firstName) updates.firstName = firstName;
+        if (lastName !== user?.lastName) updates.lastName = lastName;
+        if (username !== user?.username) updates.username = username;
+
+        if (Object.keys(updates).length > 0) {
+          await user?.update(updates);
+        }
+
+        if (newImageFile) {
+          await user?.setProfileImage({ file: newImageFile });
+        }
+
+        Alert.alert('Success', 'Your profile has been updated.');
+        router.back();
+      } catch (error: any) {
+        if (
+          error.errors &&
+          Array.isArray(error.errors) &&
+          error.errors[0]?.code === 'form_identifier_exists'
+        ) {
+          setUsernameError('This username is already taken.');
+        } else {
+          Alert.alert('Error', 'Something went wrong. Please try again.');
+        }
+      }
+    };
+
 
   const { t } = useTranslation();
  
@@ -121,6 +142,10 @@ export default function ProfileEditScreen() {
     <ScreenWrapper>
        <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
         <ScrollView contentContainerStyle={styles.container}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={28} color="#4353FD" />
+          </TouchableOpacity>
+
           <TouchableOpacity onPress={openModal}>
             {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
             <Text style={styles.editPhotoText}>{t('uploadPic')}</Text>
@@ -153,6 +178,11 @@ export default function ProfileEditScreen() {
             placeholderTextColor="#888"
           />
 
+          {firstNameError !== '' && (
+            <Text style={styles.errorText}>{firstNameError}</Text>
+          )}
+
+
           <Text style={styles.label}>{t("lName")}</Text>
           <TextInput
             value={lastName}
@@ -161,6 +191,10 @@ export default function ProfileEditScreen() {
             placeholder="Enter last name"
             placeholderTextColor="#888"
           />
+          {lastNameError !== '' && (
+            <Text style={styles.errorText}>{lastNameError}</Text>
+          )}
+
 
           <TouchableOpacity style={styles.button} onPress={handleUpdate}>
             <Text style={styles.buttonText}>{t('save')}</Text>
@@ -204,6 +238,7 @@ const styles = StyleSheet.create({
     borderRadius: 55,
     alignSelf: 'center',
     marginBottom: 10,
+    marginTop: 50
   },
   editPhotoText: {
     textAlign: 'center',
@@ -273,5 +308,13 @@ const styles = StyleSheet.create({
   marginLeft: 4,
   fontSize: 12,
 },
+backButton: {
+  position: 'absolute',
+  top: 10,
+  left: 20,
+  zIndex: 10,
+  padding: 10,
+},
+
 
 });

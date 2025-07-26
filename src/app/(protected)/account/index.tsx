@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -9,6 +9,9 @@ import {
   Switch,
   Image,
   Platform,
+  Modal,
+  Pressable,
+  FlatList,
 } from 'react-native';
 import FeatherIcon from '@expo/vector-icons/Feather';
 import { useUser, useAuth } from '@clerk/clerk-expo';
@@ -34,6 +37,11 @@ export default function Account() {
   const { t } = useTranslation();
   const { showActionSheetWithOptions } = useActionSheet();
   const [locationLabel, setLocationLabel] = useState<string>(t('Turn on your location.') || 'Loading...');
+  const [languageModalVisible, setLanguageModalVisible] = useState(false);
+  const flatListRef = useRef<FlatList>(null);
+
+  
+
 
   useEffect(() => {
     (async () => {
@@ -57,32 +65,51 @@ export default function Account() {
 
   const languages = ['en', 'cb', 'fi'];
 
+  // const onPressLanguage = () => {
+  //   const options = languages.map(code => languageLabels[code]);
+  //   options.push(t('Cancel'));
+  //   const cancelIndex = options.length - 1;
+
+  //   showActionSheetWithOptions(
+  //     { options, cancelButtonIndex: cancelIndex },
+  //     async (buttonIndex) => {
+  //       if (buttonIndex === undefined || buttonIndex === cancelIndex) return;
+
+  //       const newLang = languages[buttonIndex];
+  //       await i18n.changeLanguage(newLang);
+
+  //       if (user?.id) {
+  //         await saveLanguageToMetadata(newLang, user.id); // ✅ Save per-user
+
+  //         try {
+  //           const langKey = `lang_${user.id}`;
+  //           await SecureStore.setItemAsync(langKey, newLang); // ✅ Save locally
+  //         } catch (err) {
+  //           console.error('Failed to save language to SecureStore:', err);
+  //         }
+  //       }
+  //     }
+  //   );
+  // };
   const onPressLanguage = () => {
-    const options = languages.map(code => languageLabels[code]);
-    options.push(t('Cancel'));
-    const cancelIndex = options.length - 1;
+      setLanguageModalVisible(true);
+    };
 
-    showActionSheetWithOptions(
-      { options, cancelButtonIndex: cancelIndex },
-      async (buttonIndex) => {
-        if (buttonIndex === undefined || buttonIndex === cancelIndex) return;
+    const handleLanguageSelect = async (langCode: string) => {
+      setLanguageModalVisible(false);
+      await i18n.changeLanguage(langCode);
 
-        const newLang = languages[buttonIndex];
-        await i18n.changeLanguage(newLang);
-
-        if (user?.id) {
-          await saveLanguageToMetadata(newLang, user.id); // ✅ Save per-user
-
-          try {
-            const langKey = `lang_${user.id}`;
-            await SecureStore.setItemAsync(langKey, newLang); // ✅ Save locally
-          } catch (err) {
-            console.error('Failed to save language to SecureStore:', err);
-          }
+      if (user?.id) {
+        await saveLanguageToMetadata(langCode, user.id);
+        try {
+          const langKey = `lang_${user.id}`;
+          await SecureStore.setItemAsync(langKey, langCode);
+        } catch (err) {
+          console.error('Failed to save language to SecureStore:', err);
         }
       }
-    );
-  };
+    };
+
 
 
   const defaultAvatar = 'https://i.pravatar.cc/150';
@@ -128,6 +155,20 @@ export default function Account() {
   };
 
   const resources = ['contactUs', 'reportBug', 'rateApp', 'termsPrivacy'];
+
+  // Use i18n.language as the selected language
+  const selectedLanguage = i18n.language;
+
+  useEffect(() => {
+    if (languageModalVisible && flatListRef.current) {
+      const index = languages.indexOf(selectedLanguage);
+      if (index !== -1) {
+        setTimeout(() => {
+          flatListRef.current?.scrollToIndex({ index, animated: true });
+        }, 100);
+      }
+    }
+  }, [languageModalVisible, selectedLanguage]);
 
   return (
     <ScreenWrapper>
@@ -249,6 +290,59 @@ export default function Account() {
             {t('version', { version: '2.24 #50491' })}
           </Text>
         </ScrollView>
+
+       <Modal
+        animationType="fade"
+        transparent={true}
+        visible={languageModalVisible}
+        onRequestClose={() => setLanguageModalVisible(false)}
+      >
+        <View style={modalStyles.overlay}>
+          <View style={modalStyles.modalContent}>
+            <Text style={modalStyles.modalTitle}>{t('language')}</Text>
+
+            <FlatList
+              data={languages}
+              keyExtractor={(item) => item}
+              ref={flatListRef}
+              showsVerticalScrollIndicator={false}
+              initialScrollIndex={languages.indexOf(selectedLanguage)}
+              getItemLayout={(data, index) => ({
+                length: 48,
+                offset: 48 * index,
+                index,
+              })}
+              renderItem={({ item }) => (
+                <Pressable
+                  onPress={() => handleLanguageSelect(item)}
+                  style={[
+                    modalStyles.languageOption,
+                    item === selectedLanguage && modalStyles.activeLanguageOption,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      modalStyles.languageText,
+                      item === selectedLanguage && modalStyles.activeLanguageText,
+                    ]}
+                  >
+                    {languageLabels[item]}
+                  </Text>
+                </Pressable>
+              )}
+            />
+
+            <Pressable
+              onPress={() => setLanguageModalVisible(false)}
+              style={modalStyles.cancelButton}
+            >
+              <Text style={modalStyles.cancelText}>{t('Cancel')}</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+
+
       </SafeAreaView>
     </ScreenWrapper>
   );
@@ -387,5 +481,89 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '600',
     color: '#dc2626',
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    width: '80%',
+    borderRadius: 16,
+    padding: 20,
+    alignItems: 'center',
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  languageOption: {
+    paddingVertical: 10,
+    width: '100%',
+    alignItems: 'center',
+  },
+  languageText: {
+    fontSize: 16,
+    color: '#4353Fd',
+  },
+  cancelButton: {
+    marginTop: 16,
+  },
+  cancelText: {
+    fontSize: 16,
+    color: '#dc2626',
+  },
+});
+
+const modalStyles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    maxHeight: '70%',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  languageOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    borderRadius: 8,
+  },
+  languageText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  activeLanguageOption: {
+    backgroundColor: '#4353FD',
+  },
+  activeLanguageText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  cancelButton: {
+    marginTop: 16,
+    alignSelf: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  cancelText: {
+    color: '#4353FD',
+    fontSize: 16,
   },
 });
