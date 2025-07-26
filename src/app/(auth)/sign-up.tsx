@@ -66,59 +66,6 @@ export default function SignUpScreen() {
 
   console.log(errors)
 
-//   const onSignUp = async (data: SignUpFields) => {
-//   if (!isLoaded || loading) return;
-//   setLoading(true);
-
-//   try {
-//     console.log('Submitting data:', data);
-
-//     // Step 1: Create the sign-up
-//     await signUp.create({
-//       emailAddress: data.email,
-//       password: data.password,
-//     });
-
-//     // Step 2: Update with other required fields if needed
-//     await signUp.update({
-//       firstName: data.name,
-//       lastName: data.lastName,
-//       username: data.username,
-//     });
-
-//     console.log('After update:', JSON.stringify(signUp, null, 2));
-
-//     // Step 3: Check if email verification is required
-//     if (
-//       signUp.status === 'missing_requirements' ||
-//       !signUp.verifications.emailAddress.supportedStrategies?.includes('email_code')
-//     ) {
-//       setError('root', {
-//         message: `Signup incomplete. Status: ${signUp.status}.`,
-//       });
-//       return;
-//     }
-
-//     // Step 4: Prepare email verification
-//     await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
-
-//     // Step 5: Go to verify screen
-//     router.push('/verify');
-//   } catch (err) {
-//     if (isClerkAPIResponseError(err)) {
-//       err.errors.forEach((error) => {
-//         const field = mapClerkErrorToFormField(error);
-//         setError(field as any, { message: error.message });
-//       });
-//     } else {
-//       setError('root', {
-//         message: 'An unexpected error occurred. Please try again.',
-//       });
-//     }
-//   } finally {
-//     setLoading(false);
-//   }
-// };
 
   const onSignUp = async (data: SignUpFields) => {
     if (!isLoaded || loading) return;
@@ -139,7 +86,7 @@ export default function SignUpScreen() {
 
       router.push('/verify');
     } catch (err) {
-      console.error('Sign Up Error:', JSON.stringify(err, null, 2));
+      // console.error('Sign Up Error:', JSON.stringify(err, null, 2));
 
       if (isClerkAPIResponseError(err)) {
         err.errors.forEach((error) => {
@@ -159,7 +106,7 @@ export default function SignUpScreen() {
   return (
     <ScreenWrapper>
         <ImageBackground
-        source={require('@assets/leptos_.png')} // 🔁 Replace this with your background image path
+        source={require('@assets/lepto_logo.png')}
         style={styles.bgImage}
         resizeMode="contain"
       >
@@ -191,7 +138,7 @@ export default function SignUpScreen() {
           </Animated.View>
 
           <Text style={styles.title}>Nice to see you!</Text>
-          <Text style={styles.subtitle}>Create your account</Text>
+          <Text style={[styles.subtitle, {color:"#2b2b2bff"}]}>Create your account</Text>
 
           <View style={styles.form}>
             <View style={styles.row}>
@@ -310,7 +257,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 30,
-    fontWeight: 'semibold',
+    fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 4,
   },

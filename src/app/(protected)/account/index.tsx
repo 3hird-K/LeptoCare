@@ -134,15 +134,16 @@ export default function Account() {
       <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f8f8' }}>
         <ScrollView contentContainerStyle={styles.content}>
           {/* Account Section */}
-          <View style={[styles.section, { paddingTop: 10 }]}>
+          <View style={[styles.section, { paddingTop: 30 }]}>
             <Text style={styles.sectionTitle}>{t('account')}</Text>
             <View style={styles.sectionBody}>
-              <TouchableOpacity onPress={() => {}} style={styles.profile}>
+              {/* <TouchableOpacity onPress={() => {}} style={styles.profile}> */}
+              <TouchableOpacity onPress={() => router.push('/account/update')} style={styles.profile}>
                 <Image alt="Profile Avatar" source={{ uri: avatarUrl }} style={styles.profileAvatar} />
                 <View style={styles.profileBody}>
                   <Text style={styles.profileName}>{user?.fullName}</Text>
                   <Text style={styles.profileHandle}>
-                    {user?.emailAddresses?.[0]?.emailAddress}
+                    {user?.emailAddresses?.[0]?.emailAddress || user?.username}
                   </Text>
                 </View>
                 <FeatherIcon color="#bcbcbc" name="chevron-right" size={22} />

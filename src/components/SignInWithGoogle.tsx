@@ -24,12 +24,20 @@ export default function SignInWithGoogle() {
 
   const onPress = useCallback(async () => {
     try {
+      // const { createdSessionId, setActive, signIn, signUp } = await startSSOFlow({
+      //   strategy: 'oauth_google',
+      //   redirectUrl: AuthSession.makeRedirectUri(
+      //     {
+      //     scheme: 'leptocare',}
+      //   ),
+      // });
       const { createdSessionId, setActive, signIn, signUp } = await startSSOFlow({
         strategy: 'oauth_google',
-        redirectUrl: AuthSession.makeRedirectUri({
-          scheme: 'leptocare',
-        }),
-      });
+        // For web, defaults to current path
+        // For native, you must pass a scheme, like AuthSession.makeRedirectUri({ scheme, path })
+        // For more info, see https://docs.expo.dev/versions/latest/sdk/auth-session/#authsessionmakeredirecturioptions
+        redirectUrl: AuthSession.makeRedirectUri(),
+      })
 
       if (createdSessionId) {
         await setActive!({ session: createdSessionId });
@@ -58,7 +66,7 @@ export default function SignInWithGoogle() {
 
       console.warn('Sign-in incomplete:', { signIn, signUp });
     } catch (err: any) {
-      // console.error('❌ Sign-in error:', err);
+    
 
       let message = 'An unexpected error occurred. Please try again.';
 
@@ -71,6 +79,7 @@ export default function SignInWithGoogle() {
       }
 
       Alert.alert('Authentication Error', message);
+      console.error(JSON.stringify(err, null, 2))
       router.push('/sign-up');
     }
   }, []);

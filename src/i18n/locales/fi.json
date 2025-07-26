@@ -12,7 +12,7 @@
   "rateApp": "I-rate sa App Store",
   "termsPrivacy": "Mga Tuntunin at Privacy",
   "logout": "Mag-logout",
-  "version": "Bersyon ng App: kasalukuyang ginagawa",
+  "version": "Bersyon ng App: Beta",
   "guide": "Ang iyong gabay sa kaalaman at pag-iwas sa leptospirosis",
   "reading": "Gabay sa pagbabasa",
   "awareness": "Kaalaman",
@@ -138,8 +138,12 @@
   "p38": "ay ginagamit upang gamutin ang leptospirosis. Dapat itong ibigay agad.",
   "p39": "• Ang malulubhang kaso ay maaaring mangailangan ng ",
   "p40": "intravenous (IV) na antibiotics.",
-  "p41": "• Ang maagang paggamot ay nakatutulong upang maiwasan ang matinding karamdaman at mapabilis ang paggaling."
-
+  "p41": "• Ang maagang paggamot ay nakatutulong upang maiwasan ang matinding karamdaman at mapabilis ang paggaling.",
+  "uploadPic": "Mag-upload ng Larawan",
+  "uName": "Username",
+  "fName": "Pangalan",
+  "lName": "Apelyido",
+  "save": "I-save ang mga pagbabago"
 }
 
  

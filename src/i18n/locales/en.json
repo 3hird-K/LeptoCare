@@ -12,7 +12,7 @@
   "rateApp": "Rate in App Store",
   "termsPrivacy": "Terms and Privacy",
   "logout": "Log Out",
-  "version": "App Version: under developement",
+  "version": "App Version: Beta",
   "guide": "Your guide to leptospirosis awareness and prevention",
   "reading": "Reading guide",
   "awareness": "Awareness",
@@ -138,7 +138,12 @@
   "p38": "are used to treat leptospirosis. Administer them promptly.",
   "p39": "• Severe cases may require ",
   "p40": "(IV) antibiotics.",
-  "p41": "• Early treatment helps prevent severe illness and shorten recovery time."
+  "p41": "• Early treatment helps prevent severe illness and shorten recovery time.",
+  "uploadPic": "Upload Profile",
+  "uName": "Username",
+  "fName": "First Name",
+  "lName": "Last Name",
+  "save": "Save changes"
 }
 
 

@@ -12,7 +12,7 @@
   "rateApp": "Hatagi og rating sa App Store",
   "termsPrivacy": "Mga kondisyon ug privacy",
   "logout": "Gawas",
-  "version": "Bersyon sa App: gihimo pa",
+  "version": "Bersyon sa App: Beta",
   "guide": "Imong giya sa kahibalo ug paglikay sa leptospirosis",
   "reading": "Giya sa pagbasa",
   "awareness": "Kahibalo",
@@ -138,7 +138,13 @@
   "p38": "gigamit sa pagtambal sa leptospirosis. Importante nga ihatag kini dayon.",
   "p39": "• Ang grabe nga mga kaso mahimong manginahanglan og ",
   "p40": "intravenous (IV) nga antibiotics.",
-  "p41": "• Ang sayo nga pagtambal makatabang sa pagpugong sa grabe nga sakit ug makapadali sa pagkaayo."
+  "p41": "• Ang sayo nga pagtambal makatabang sa pagpugong sa grabe nga sakit ug makapadali sa pagkaayo.",
+  "uploadPic": "I-upload ang Larawan",
+  "uName": "Username",
+  "fName": "Ngalan",
+  "lName": "Apelyido",
+  "save": "I-save ang mga kausaban"
+
 }
 
 

@@ -208,6 +208,7 @@ export default function SignInScreen() {
                       }
                     />
 
+                  
                     {errors.root && (
                       <Text style={styles.rootError}>{errors.root.message}</Text>
                     )}

@@ -33,7 +33,7 @@ const SplashScreen = () => {
   return (
     <View style={styles.container}>
       <Animated.Image
-        source={require('@assets/leptos_.png')} 
+        source={require('@assets/lepto_logo.png')} 
         style={[
           styles.logo,
           {
